@@ -124,7 +124,7 @@ public class ContadorDeVocales{
 		String html="";
 		String s=null;
 		String enunciado="";
-		Set<String> x= new LinkedHashSet<>();
+		ArrayList<String> x= new ArrayList<>();
 
 		System.out.println("1)Contar vocales del fichero sin distincción de mayúsculas");
 		System.out.println("2)Contar numero de palabras");
