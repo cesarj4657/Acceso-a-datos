@@ -10,7 +10,7 @@ public class ContadorDeVocales{
 	char x=' ';
 	Scanner y = new Scanner(System.in);
 
-	public void contarvocalessindistinccion(File archivo) {
+	public String contarvocalessindistinccion(File archivo) {
 		try    {    
 			FileReader lee = new FileReader(archivo);    
 			int contar = lee.read();    
@@ -41,18 +41,19 @@ public class ContadorDeVocales{
 				contar = lee.read(); 
 
 			}    
-			System.out.println("El fichero tiene "+vocales+" vocales");
+			lee.close();  
 
-			lee.close();       
 		}    catch    (IOException    ex)    {    
 			System.out.println("Something    bad    has    happended    :-­-(");    
-		}    
+		}  
+		return "El fichero tiene "+vocales+" vocales";
 	} 
-	public void contarpalabras(File archivo) {
+	public String contarpalabras(File archivo) {
+		int palabras=1;
 		try{    
 			FileReader lee = new FileReader(archivo);    
 			int  contar  = lee.read();    
-			int palabras=1;
+
 			while(contar!=-1){   
 
 				x=(char)contar;
@@ -62,18 +63,20 @@ public class ContadorDeVocales{
 				contador+=(char)contar;
 				contar = lee.read(); 
 			}    
-			System.out.println("El fichero tiene "+palabras+" palabras");
+			System.out.println();
 
 			lee.close();       
 		}catch(IOException ex){    
 			System.out.println("Something    bad    has    happended    :-­-(");    
 		}
+		return "El fichero tiene "+palabras+" palabras";
 	} 
-	public void contarpalabrasrepetidas(File archivo) {
+	public ArrayList contarpalabrasrepetidas(File archivo) {
 		ArrayList<String> lista = new ArrayList<String>();
 		ArrayList<String> lista2 = new ArrayList<String>();
 		FileReader lee;
 		int repetidas=0,contarp=0;
+		Set<String> s = new LinkedHashSet<>();
 		try {
 			lee = new FileReader(archivo);
 			int contar = lee.read();    
@@ -102,64 +105,89 @@ public class ContadorDeVocales{
 				}
 				repetidas=0;
 			}
-			Set<String> s = new LinkedHashSet<>(lista2);
-			
+			s = new LinkedHashSet<>(lista2);
+
 			for(String u: s) {
-				System.out.println(u);
+				lista.add(u);
 			}
- 
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}   
+		}
+		return lista;   
 
 	}
 	public void segundomenu(File archivo) {
 		int seleccion=0;
 		String html="";
+		String s=null;
+		String enunciado="";
+		Set<String> x= new LinkedHashSet<>();
+
 		System.out.println("1)Contar vocales del fichero sin distincción de mayúsculas");
 		System.out.println("2)Contar numero de palabras");
 		System.out.println("3)Contar palabras repetidas");
+
 		seleccion=y.nextInt();
+
 		if(seleccion==1) {
-			this.contarvocalessindistinccion(archivo);
+			html=contarvocalessindistinccion(archivo);
+			enunciado="Vocales del fichero sin distincción de mayúsculas:";
 		}else if(seleccion==2) {
-			this.contarpalabras(archivo);
+			html=contarpalabras(archivo);
+			enunciado="Numero de palabras del fichero:";
 		}else if(seleccion==3) {
-			this.contarpalabrasrepetidas(archivo);
+			x=contarpalabrasrepetidas(archivo);
 		}else {
 
 		}
+
 		System.out.println("¿Desea generar un documento html?");
 		System.out.println("1)Si");
 		System.out.println("2)No");
+
 		seleccion=y.nextInt();
 
+		y.nextLine();
+
 		if(seleccion==1) {
-			System.out.println("Nombre del documento html");
-			html=y.nextLine();
-			FileWriter fichero = null;
-			PrintWriter pw = null;
-			try
-			{
-				fichero = new FileWriter("c:/prueba.txt");
-				pw = new PrintWriter(fichero);
+			System.out.println("Escriba la ruta donde guardar el documento html");
+			s=y.nextLine();
+			if(s!=null) {
+				try{
+					FileWriter fichero = null;
+					PrintWriter pw = null;
 
-				for (int i = 0; i < 10; i++)
-					pw.println("Linea " + i);
+					fichero = new FileWriter(s);
+					pw = new PrintWriter(fichero);
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (null != fichero)
-						fichero.close();
-				} catch (Exception e2) {
-					e2.printStackTrace();
+					pw.write("<html><h1>"+enunciado+"</h1>");
+					pw.write("<body>"+html+"</br></body></html>");
+					fichero.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}else if(x!=null){
+				try{
+					FileWriter fichero = null;
+					PrintWriter pw = null;
+					fichero = new FileWriter(s);
+					pw = new PrintWriter(fichero);
+					pw.write("<html><h1>"+enunciado+"</h1>");
+					
+					for(String u : x) {
+						pw.write("<body>"+u+"</br></body></html>");
+					}
+					
+					fichero.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
-
 		}
 	}
 }
