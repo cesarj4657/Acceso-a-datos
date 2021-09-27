@@ -1,4 +1,3 @@
-package Practica1;
 
 import java.io.*;
 import java.util.Scanner;
@@ -22,20 +21,20 @@ public class ContadorDeVocales{
 				x=Character.toLowerCase(x);
 				switch(x) {
 				case 'a':
-				case 'Ã¡':
-				case 'Ã¤':
 				case 'e':
-				case 'Ã©':
-				case 'Ã«':
 				case 'i':
-				case 'Ã­':
-				case 'Ã¯':
 				case 'o':
-				case 'Ã³':
-				case 'Ã¶':
 				case 'u':
-				case 'Ãº':
-				case 'Ã¼':
+				case 'á':
+				case 'é':
+				case 'í':
+				case 'ó':
+				case 'ú':
+				case 'ä':
+				case 'ë':
+				case 'ï':
+				case 'ö':
+				case 'ü':
 					vocales++;
 					break;
 				}
@@ -74,11 +73,11 @@ public class ContadorDeVocales{
 		return "El fichero tiene "+palabras+" palabras";
 	} 
 	public ArrayList contarpalabrasrepetidas(File archivo) {
-		ArrayList<String> lista = new ArrayList<String>();
-		ArrayList<String> lista2 = new ArrayList<String>();
+
+		ArrayList<Ordenar> lista = new ArrayList<Ordenar>();
 		FileReader lee;
 		int repetidas=0,contarp=0;
-		Set<String> s = new LinkedHashSet<>();
+
 		try {
 			lee = new FileReader(archivo);
 			int contar = lee.read();    
@@ -89,29 +88,24 @@ public class ContadorDeVocales{
 				contar = lee.read();
 			}
 			lee.close();
-			String [] tokens = contador.split("[,.;: ?Â¿Â¡!()]");
+			String [] tokens = contador.split("[,.;: ?!()]");
 
 			for (int i = 0; i <= tokens.length-1; i++) {
-				lista.add(tokens[i]);
+				lista.add(new Ordenar(tokens[i],0));
 			}
 
-			for(String i: lista) {
-				for(String x: lista) {
-					if(i.equals(x)) {
-						repetidas++;
+			for(Ordenar x : lista){
+				for(Ordenar i : lista){
+					if(x.getPalabra().equals(i.getPalabra())) {
+						x.setRepetidas(x.getRepetidas()+1);
 					}
 				}
-				if(repetidas>=2) {
-					lista2.add(i+" se repite " + repetidas + " veces");
-					repetidas=0;
-				}
-				repetidas=0;
 			}
-			s = new LinkedHashSet<>(lista2);
+
+			Set<Ordenar> set = new HashSet<>(lista);
 			lista.clear();
-			for(String u: s) {
-				lista.add(u);
-			}
+			lista.addAll(set);
+			Collections.sort(lista);
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -127,9 +121,9 @@ public class ContadorDeVocales{
 		String html="";
 		String s=null;
 		String enunciado="";
-		ArrayList<String> x= new ArrayList<>();
+		ArrayList<Ordenar> x= new ArrayList<Ordenar>();
 
-		System.out.println("1)Contar vocales del fichero sin distincciÃ³n de mayÃºsculas");
+		System.out.println("1)Contar vocales del fichero sin distinccion de mayusculas");
 		System.out.println("2)Contar numero de palabras");
 		System.out.println("3)Contar palabras repetidas");
 
@@ -137,15 +131,15 @@ public class ContadorDeVocales{
 
 		if(seleccion==1) {
 			html=contarvocalessindistinccion(archivo);
-			enunciado="Vocales del fichero sin distincciÃ³n de mayÃºsculas:";
+			enunciado="Vocales del fichero sin distinccion de mayusculas:";
 		}else if(seleccion==2) {
 			html=contarpalabras(archivo);
 			enunciado="Numero de palabras del fichero:";
 		}else if(seleccion==3) {
 			x=contarpalabrasrepetidas(archivo);
-			enunciado="Palabras repetida: ";
+			enunciado="Palabras repetidas: ";
 		}
-		System.out.println("Â¿Desea generar un documento html?");
+		System.out.println("1)¿Desea generar un documento html?");
 		System.out.println("1)Si");
 		System.out.println("2)No");
 		int seleccion2=0;
@@ -156,39 +150,38 @@ public class ContadorDeVocales{
 		if(seleccion2==1) {
 			System.out.println("Escriba la ruta donde guardar el documento html");
 			s=y.nextLine();
-			if(s!=null) {
-				if(seleccion==1||seleccion==2) {
-					try{
-						FileWriter fichero = null;
-						PrintWriter pw = null;
 
-						fichero = new FileWriter(s);
-						pw = new PrintWriter(fichero);
+			if(seleccion==1||seleccion==2) {
+				try{
+					FileWriter fichero = null;
+					PrintWriter pw = null;
 
-						pw.write("<html><h1>"+enunciado+"</h1>");
-						pw.write("<body>"+html+"</br></body></html>");
-						fichero.close();
+					fichero = new FileWriter(s);
+					pw = new PrintWriter(fichero);
 
-					} catch (Exception e) {
-						e.printStackTrace();
+					pw.write("<html><h1>"+enunciado+"</h1>");
+					pw.write("<body>"+html+"</br></body></html>");
+					fichero.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}else if(seleccion==3) {
+				try{
+					FileWriter fichero = null;
+					PrintWriter pw = null;
+					fichero = new FileWriter(s);
+					pw = new PrintWriter(fichero);
+					pw.write("<html><h1>"+enunciado+"</h1>"+"<body>");
+
+					for(Ordenar u : x) {
+						pw.write("La palabra "+u.getPalabra()+" se repite "+u.getRepetidas()+" veces</br>");
 					}
-				}else if(seleccion==3) {
-					try{
-						FileWriter fichero = null;
-						PrintWriter pw = null;
-						fichero = new FileWriter(s);
-						pw = new PrintWriter(fichero);
-						pw.write("<html><h1>"+enunciado+"</h1>"+"<body>");
+					pw.write("</body></html>");
+					fichero.close();
 
-						for(String u : x) {
-							pw.write(u+"</br>");
-						}
-						pw.write("</body></html>");
-						fichero.close();
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
