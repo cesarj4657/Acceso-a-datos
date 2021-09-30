@@ -6,12 +6,12 @@ import java.lang.*;
 
 public class ContadorDeVocales{
 
-	String contador="";
-	int vocales=0;
-	char x=' ';
+	String contador="";//String que tiene como funcion almacenar el texto una vez leído
+	int vocales=0;//Cuenta vocales
+	char x=' ';//Caracter que determina las vocales que se van a contar
 	Scanner y = new Scanner(System.in);
 
-	public String contarvocalessindistinccion(File archivo) {
+	public String contarvocales(File archivo) {//Metodo que cuenta las vocales sin dinsticcion
 		try    {    
 			FileReader lee = new FileReader(archivo);    
 			int contar = lee.read();    
@@ -102,7 +102,7 @@ public class ContadorDeVocales{
 				}
 			}
 
-			Set<Ordenar> set = new HashSet<>(lista);
+			Set<Ordenar> set = new HashSet<Ordenar>(lista);
 			lista.clear();
 			lista.addAll(set);
 			Collections.sort(lista);
@@ -130,7 +130,7 @@ public class ContadorDeVocales{
 		seleccion=y.nextInt();
 
 		if(seleccion==1) {
-			html=contarvocalessindistinccion(archivo);
+			html=contarvocales(archivo);
 			enunciado="Vocales del fichero sin distinccion de mayusculas:";
 		}else if(seleccion==2) {
 			html=contarpalabras(archivo);
@@ -175,7 +175,9 @@ public class ContadorDeVocales{
 					pw.write("<html><h1>"+enunciado+"</h1>"+"<body>");
 
 					for(Ordenar u : x) {
-						pw.write("La palabra "+u.getPalabra()+" se repite "+u.getRepetidas()+" veces</br>");
+						if(u.getRepetidas()>1) {
+							pw.write("La palabra "+u.getPalabra()+" se repite "+u.getRepetidas()+" veces</br>");
+						}
 					}
 					pw.write("</body></html>");
 					fichero.close();
